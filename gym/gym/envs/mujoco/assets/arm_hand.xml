@@ -1,0 +1,141 @@
+<!-- ======================================================
+	This file is part of MuJoCo.     
+	Copyright 2009-2016 Roboti LLC.
+	
+	Model 		:: arm_hand
+		
+	Mujoco		:: Advanced physics simulation engine
+		Source		: www.roboti.us
+		Version		: 1.31
+		Released 	: 23Apr16
+		
+	Author		:: Vikash Kumar
+		Contacts 	: kumar@roboti.us
+		Last edits 	: 30Apr16, 30Nov'15, 5Nov'15
+====================================================== -->
+<mujoco model="arm_hand (v1.31)">
+	<compiler 	inertiafromgeom="true"
+				angle="radian"/>
+			
+	<size 	nuser_jnt="1"
+			nuser_geom="1"/>
+
+	<option	timestep="0.001"
+			gravity="0 0 -9.8"
+			viscosity="0"
+			iterations="20"/>
+	
+	<asset>
+		<material name="MatGnd" specular=".3" shininess=".3" reflectance="0.3" rgba=".5 .55 .5 1"/>
+	</asset>
+	
+	<default>
+		<joint limited="true" damping="1" stiffness="0" armature=".1" user="0"/>
+		<geom solref="0.008 1" solimp="0.95 0.95 0.01" margin="0.001" user="0"/>
+		<motor ctrllimited="true" ctrlrange="-1 1"/>
+		<position ctrllimited="true"/>
+		
+		<default class='0'>
+			<geom friction="1 0.005 0.001" rgba=".75 .6 .5 1" contype="1" conaffinity="0"/>
+		</default>
+
+		<default class='1'>
+			<geom friction="1 0.005 0.001" rgba=".7 .6 .55 1" contype="1" conaffinity="0"/>
+		</default>
+		
+		<default class='arm'>
+			<joint damping="5"/>
+		</default>
+	</default>
+
+	<worldbody>
+		<light directional="true" cutoff="40" exponent="10" diffuse=".4 .4 .4" specular=".7 .7 .7" pos="0 0 1.5" dir="0 0 -1"/>
+		<geom name="tableTop" material="MatGnd" type="plane" pos="0.15 0 0" size="0.4 0.6 0.5" rgba=".6 .6 .5 1" contype="1" conaffinity="1"/>
+	                                                                
+		<!--  ================= ARM ================= /-->
+		<body name="upperarm" pos="-0.15 0 0.6">
+			<geom class="0" type="capsule" fromto="0 0 0 0 0 -0.345" size="0.05"/>
+			<joint class='arm' name="s_abduction" type="hinge" pos="0 0 0" axis="1 0 0" range="-1.57 .7" user="001"/>
+			<joint class='arm' name="s_flexion" type="hinge" pos="0 0 0" axis="0 -1 0" range="-.85 1.57" user="002"/>
+			<joint class='arm' name="s_rotation" type="hinge" pos="0 0 0" axis="0 0 1" range="-.85 .85" user="003"/>
+			
+			<body name="forearm" pos="0 0 -0.36">
+				<geom class="0" type="capsule" fromto="0 0 0 0.225 0 0" size="0.035"/>
+				<joint class='arm' name="e_flexion" type="hinge" pos="0 0 0" axis="0 -1 0" range="-1.5 1.05" user="004"/>
+				<joint class='arm' name="e_pronation" type="hinge" pos="0 0 0" axis="-1 0 0" range="-1.5 1.57" user="005"/>
+					
+	<!--  ================= Palm ================= /-->
+				<body name="palm" pos="0.27 0 0">
+					<geom class="1" name="palm" type="box" size="0.045 0.04 0.01" pos="0.045 0 0"/>
+					<joint name="w_abduction" type="hinge" pos="0 0 0" axis="0 0 1" range="-.5 .5" user="006"/>
+					<joint name="w_flexion" type="hinge" pos="0 0 0" axis="0 -1 0" range="-1.05 1.05" user="007"/>
+					
+					<body name="fingers" pos=".09 0 0">
+						<geom name="FFP" class="1" type="capsule" fromto=".00  .024 0 		.03   .024 0" 		size="0.008" />
+						<geom name="FFM" class="1" type="capsule" fromto=".03  .024 0 		.06   .024 -.01" 	size="0.0075" />
+						<geom name="FFD" class="1" type="capsule" fromto=".06  .024 -.01 	.075  .024 -.018" 	size="0.007" />
+						
+						<geom name="MFP" class="1" type="capsule" fromto=".00 -.008 0 		.03  -.008 0" 		size="0.008"/>
+						<geom name="MFM" class="1" type="capsule" fromto=".03 -.008 0 		.06  -.008 -.01" 	size="0.0075" />
+						<geom name="MFD" class="1" type="capsule" fromto=".06 -.008 -.01 	.075 -.008 -.018" 	size="0.007" />
+						
+						<geom name="RFP" class="1" type="capsule" fromto=".00  .008 0 		.03   .008 0" 		size="0.008" />
+						<geom name="RFM" class="1" type="capsule" fromto=".03  .008 0 		.06   .008 -.01" 	size="0.0075" />
+						<geom name="RFD" class="1" type="capsule" fromto=".06  .008 -.01 	.075  .008 -.018" 	size="0.007" />
+						
+						<geom name="LFP" class="1" type="capsule" fromto=".00 -.024 0 		.03  -.024 0" 		size="0.008" />
+						<geom name="LFM" class="1" type="capsule" fromto=".03 -.024 0 		.06  -.024 -.01" 	size="0.0075" />
+						<geom name="LFD" class="1" type="capsule" fromto=".06 -.024 -.01 	.075 -.024 -.018" 	size="0.007" />
+
+						<joint name="fingerFlex" type="hinge" pos="0 0 0" axis="0 1 0" range="0 1.57" user="008"/>
+					</body>
+					
+					<body name="thumb" pos=".03 .04 0">
+						<geom name="THP" class="1" type="capsule" fromto="0 0 0 			.02 .025 -.010" 	size="0.009" />
+						<geom name="THM" class="1" type="capsule" fromto=".02 .025 -.010 	.045 .035 -.018" 	size="0.009" />
+						<geom name="THD" class="1" type="capsule" fromto=".045 .035 -.018 	.058 .035 -.022" 	size="0.009" />
+						
+						<joint name="thumbFlex" type="hinge" pos="0 0 0" axis="1 -.4 0" range="-2 1.05"  user="009"/>
+					</body>
+					
+				</body>
+				
+			</body>
+			
+		</body>
+		
+		<!--  ================= OBJECT ================= /-->
+		<body name="object" pos="0.25 0 .1" quat=".866 -.5 0 0">
+			<geom type="capsule" name="geom_object" size="0.025" fromto="0 0 .035 0 0 -.035" rgba="0.5 0.6 0.8 1" user="1" contype="1" conaffinity="1"/>
+			<joint name="fr" type="free" limited='false' damping="0" armature="0" user="010"/>
+		</body>
+	
+	</worldbody>
+	
+	<actuator>
+	
+		<!--  ================= Torque actuators ================= /-->
+		<!--<motor joint='s_abduction' 	name='As_abduction' gear="100"/>
+		<motor joint='s_flexion' 	name='As_flexion' 	gear="100"/>
+		<motor joint='s_rotation' 	name='As_rotation' 	gear="100"/>
+		<motor joint='e_flexion' 	name='Ae_flexion' 	gear="70"/>
+		<motor joint='e_pronation' 	name='Ae_pronation' gear="70"/>
+		<motor joint='w_abduction' 	name='Aw_abduction' gear="30"/>
+		<motor joint='w_flexion' 	name='Aw_flexion' 	gear="30"/>
+		<motor joint='fingerFlex' 	name='AfingerFlex' 	gear="10"/>
+		<motor joint='thumbFlex' 	name='AthumbFlex' 	gear="10"/>-->
+		
+		<!--  ================= Position actuators ================= /-->
+		<position joint='s_abduction' 	name='As_abduction' kp="100" ctrlrange='-1.57 .7'/>
+		<position joint='s_flexion' 	name='As_flexion' 	kp="100" ctrlrange='-.85 1.57'/>
+		<position joint='s_rotation' 	name='As_rotation' 	kp="100" ctrlrange='-.85 0.85'/>
+		<position joint='e_flexion' 	name='Ae_flexion' 	kp="70"  ctrlrange='-1.5 1.05'/>
+		<position joint='e_pronation' 	name='Ae_pronation' kp="70"  ctrlrange='-1.5 1.57'/>
+		<position joint='w_abduction' 	name='Aw_abduction' kp="30"  ctrlrange='-0.5 0.5'/>
+		<position joint='w_flexion' 	name='Aw_flexion' 	kp="30"  ctrlrange='-1.05 1.05'/>
+		<position joint='fingerFlex' 	name='AfingerFlex' 	kp="10"  ctrlrange='0 1.57'/>
+		<position joint='thumbFlex' 	name='AthumbFlex' 	kp="10"  ctrlrange='-2 1.05'/>
+
+	</actuator>
+
+</mujoco>
